@@ -6,9 +6,11 @@
 // Module imports
 const express = require("express");
 const path = require("path");
+const books = require("../database/books.js");
 
 // Express app
 const app = express();
+app.use(express.json());
 
 // Landing page with CSS included (GET route for root "/")
 app.get("/", (req, res) => {
@@ -76,6 +78,38 @@ app.get("/error", (req, res, next) => {
   next(new Error("Test error"));
 });
 
+///////////////////////////////////////////////////////////////////////////////////////////
+// Week 4 assignment below this line
+// GET all books
+app.get("/api/books", async (req, res) => {
+  try {
+    const allBooks = await books.find(); // Await the Promise
+    res.status(200).json(allBooks);
+  } catch (err) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// GET book by ID
+app.get("/api/books/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "Invalid book ID" });
+    }
+
+    const book = await books.findOne({ id }); // Await the Promise
+    res.status(200).json(book);
+  } catch (err) {
+    if (err.message === "No matching item found") {
+      return res.status(404).json({ error: "Book not found" });
+    }
+
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////
+
 // 404 Error Middleware
 app.use((req, res, next) => {
   res.status(404).send("404 - Page Not Found");
@@ -89,8 +123,6 @@ app.use((err, req, res, next) => {
     ...(req.app.get("env") === "development" && { stack: err.stack }),
   });
 });
-
-// Week 4 assignment below this line
 
 // Export the app
 module.exports = app;

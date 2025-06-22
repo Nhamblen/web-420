@@ -36,7 +36,7 @@ describe("In-N-Out-Books Server", () => {
   });
 });
 
-describe("API Tests", () => {
+describe("Chapter 3 API Tests", () => {
   test("Should return an array of books", async () => {
     const res = await request(app).get("/api/books");
     expect(res.statusCode).toBe(200);
