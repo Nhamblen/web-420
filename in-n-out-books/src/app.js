@@ -1,7 +1,7 @@
 // Name: Noah Hamblen
 // Date: 6/12/25
 // File name: app.js
-// Description: Includes landing page, error handling, and exports
+// Description: Includes API, landing page, error handling, and exports
 
 // Module imports
 const express = require("express");
@@ -89,6 +89,8 @@ app.use((err, req, res, next) => {
     ...(req.app.get("env") === "development" && { stack: err.stack }),
   });
 });
+
+// Week 4 assignment below this line
 
 // Export the app
 module.exports = app;

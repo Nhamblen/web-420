@@ -35,3 +35,25 @@ describe("In-N-Out-Books Server", () => {
     expect(res.body.message).toBe("Internal Server Error"); // Expect the JSON response to have the message "Internal Server Error"
   });
 });
+
+describe("API Tests", () => {
+  test("Should return an array of books", async () => {
+    const res = await request(app).get("/api/books");
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toBeInstanceOf(Array);
+    expect(res.body[0]).toHaveProperty("id");
+  });
+
+  test("Should return a single book", async () => {
+    const res = await request(app).get("/api/books/1");
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("title");
+    expect(res.body.id).toBe(1);
+  });
+
+  test("Should return a 400 error if the id is not a number", async () => {
+    const res = await request(app).get("/api/books/abc");
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({ error: "Invalid book ID" });
+  });
+});
