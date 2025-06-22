@@ -74,18 +74,17 @@ app.get("/", (req, res) => {
   `);
 });
 
-app.get("/error", (req, res, next) => {
-  next(new Error("Test error"));
-});
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Week 4 assignment below this line
 // GET all books
 app.get("/api/books", async (req, res) => {
   try {
+    // Attempt to retrieve all books from the collection using the async find() method
     const allBooks = await books.find(); // Await the Promise
+    // If successful, respond with a 200 OK and send the array of books as JSON
     res.status(200).json(allBooks);
   } catch (err) {
+    // Catch any unexpected server errors and respond with a 500 status
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -93,22 +92,33 @@ app.get("/api/books", async (req, res) => {
 // GET book by ID
 app.get("/api/books/:id", async (req, res) => {
   try {
+    // Convert the URL parameter to a number
     const id = Number(req.params.id);
     if (isNaN(id)) {
+      // If id is not a valid number, return a 400 Bad Request
       return res.status(400).json({ error: "Invalid book ID" });
     }
 
+    // Attempt to find a single book matching the given ID
     const book = await books.findOne({ id }); // Await the Promise
+    // If found, respond with the book data and 200 OK
     res.status(200).json(book);
   } catch (err) {
+    // If the error was due to no match found, return a 404 Not Found
     if (err.message === "No matching item found") {
       return res.status(404).json({ error: "Book not found" });
     }
 
+    // Otherwise, return a 500 Internal Server Error
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 ////////////////////////////////////////////////////////////////////////////////////////////
+
+// Route to trigger a manual error for testing 500 error handling
+app.get("/error", (req, res, next) => {
+  next(new Error("Test error"));
+});
 
 // 404 Error Middleware
 app.use((req, res, next) => {

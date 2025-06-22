@@ -37,23 +37,26 @@ describe("In-N-Out-Books Server", () => {
 });
 
 describe("Chapter 3 API Tests", () => {
+  // Test: Should return an array of all books
   test("Should return an array of books", async () => {
     const res = await request(app).get("/api/books");
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toBeInstanceOf(Array);
-    expect(res.body[0]).toHaveProperty("id");
+    expect(res.statusCode).toBe(200); // Expect a 200 OK response
+    expect(res.body).toBeInstanceOf(Array); // Expect the response body to be an array
+    expect(res.body[0]).toHaveProperty("id"); // Expect the first item in the array to have an 'id' property
   });
 
+  // Test: Should return a single book by ID
   test("Should return a single book", async () => {
-    const res = await request(app).get("/api/books/1");
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("title");
-    expect(res.body.id).toBe(1);
+    const res = await request(app).get("/api/books/1"); // GET book with ID = 1
+    expect(res.statusCode).toBe(200); // Expect a 200 OK response
+    expect(res.body).toHaveProperty("title"); // Expect the returned object to have a 'title' property
+    expect(res.body.id).toBe(1); // Expect the ID of the returned book to be 1
   });
 
+  // Test: Should return a 400 Bad Request if ID is not a number
   test("Should return a 400 error if the id is not a number", async () => {
-    const res = await request(app).get("/api/books/abc");
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toEqual({ error: "Invalid book ID" });
+    const res = await request(app).get("/api/books/abc"); // GET with invalid ID
+    expect(res.statusCode).toBe(400); // Expect a 400 Bad Request status code
+    expect(res.body).toEqual({ error: "Invalid book ID" }); // Expect a descriptive error message
   });
 });
