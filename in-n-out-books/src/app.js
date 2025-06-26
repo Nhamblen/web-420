@@ -119,27 +119,44 @@ app.get("/api/books/:id", async (req, res) => {
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Week 5 assignment below this line
+// POST route for adding a new book
 app.post("/api/books", (req, res) => {
   try {
+    // Destructure book data from the request body
     const { id, title, author } = req.body;
     if (!title) {
+      // If the title is missing, return a 400 Bad Request error
       return res.status(400).json({ message: "Title is required." });
     }
+
+    // Create a new book object using the submitted data
     const book = { id, title, author };
+
+    // Insert the book into the mock database (Collection instance)
     books.insertOne(book); // using the Collection instance method
+
+    // Return a 201 Created status and the newly added book
     res.status(201).json(book);
   } catch (error) {
+    // If any error occurs, log it and return a 500 Internal Server Error
     console.error("POST /api/books error:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
+// DELETE route for removing a book by ID
 app.delete("/api/books/:id", (req, res) => {
   try {
+    // Extract and convert the ID from the URL parameter (string to number)
     const id = parseInt(req.params.id);
+
+    // Attempt to delete the book with the matching ID from the collection
     books.deleteOne({ id }); // match object with { id }
+
+    // Respond with a 204 No Content status, indicating successful deletion
     res.sendStatus(204);
   } catch (error) {
+    // If an error occurs, log it and return a 500 Internal Server Error
     console.error("DELETE /api/books error:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }

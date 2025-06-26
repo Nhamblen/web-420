@@ -64,21 +64,29 @@ describe("Chapter 3 API Tests", () => {
 describe("Chapter 4 API Tests", () => {
   // Test: Add a new book
   test("Should return a 201-status code when adding a new book", async () => {
+    // Send a POST request to /api/books with a valid book object
     const response = await request(app)
       .post("/api/books")
       .send({ id: "1", title: "Test Book", author: "Tester" });
 
+    // Expect a 201 Created response
     expect(response.statusCode).toBe(201);
+
+    // Expect the response body to contain the correct title
     expect(response.body).toHaveProperty("title", "Test Book");
   });
 
   // Test: Add a new book with missing title
   test("Should return a 400-status code when adding a new book with missing title", async () => {
+    // Send a POST request without a title field
     const response = await request(app)
       .post("/api/books")
       .send({ id: "2", author: "NoTitle" });
 
+    // Expect a 400 Bad Request response
     expect(response.statusCode).toBe(400);
+
+    // Expect the error message to indicate that the title is required
     expect(response.body).toHaveProperty("message", "Title is required.");
   });
 
@@ -89,9 +97,10 @@ describe("Chapter 4 API Tests", () => {
       .post("/api/books")
       .send({ id: "3", title: "Delete", author: "Author" });
 
-    // Then delete it
+    // Send a DELETE request to remove the book
     const response = await request(app).delete("/api/books/3");
 
+    // Expect a 204 No Content response, indicating successful deletion
     expect(response.statusCode).toBe(204);
   });
 });
