@@ -6,11 +6,13 @@
 // Module imports
 const express = require("express");
 const path = require("path");
+const bodyParser = require("body-parser");
 const books = require("../database/books.js");
 
 // Express app
 const app = express();
 app.use(express.json());
+app.use(bodyParser.json());
 
 // Landing page with CSS included (GET route for root "/")
 app.get("/", (req, res) => {
@@ -111,6 +113,35 @@ app.get("/api/books/:id", async (req, res) => {
 
     // Otherwise, return a 500 Internal Server Error
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Week 5 assignment below this line
+app.post("/api/books", (req, res) => {
+  try {
+    const { id, title, author } = req.body;
+    if (!title) {
+      return res.status(400).json({ message: "Title is required." });
+    }
+    const book = { id, title, author };
+    books.insertOne(book); // using the Collection instance method
+    res.status(201).json(book);
+  } catch (error) {
+    console.error("POST /api/books error:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.delete("/api/books/:id", (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    books.deleteOne({ id }); // match object with { id }
+    res.sendStatus(204);
+  } catch (error) {
+    console.error("DELETE /api/books error:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 ////////////////////////////////////////////////////////////////////////////////////////////

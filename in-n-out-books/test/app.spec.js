@@ -62,10 +62,6 @@ describe("Chapter 3 API Tests", () => {
 });
 
 describe("Chapter 4 API Tests", () => {
-  beforeEach(() => {
-    resetBooks(); // Reset the database before each test
-  });
-
   // Test: Add a new book
   test("Should return a 201-status code when adding a new book", async () => {
     const response = await request(app)
