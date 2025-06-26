@@ -1,5 +1,5 @@
 // Name: Noah Hamblen
-// Date: 6/12/25
+// Date: 6/26/25
 // File name: app.spec.js
 // Description: Jest testing
 
@@ -58,5 +58,44 @@ describe("Chapter 3 API Tests", () => {
     const res = await request(app).get("/api/books/abc"); // GET with invalid ID
     expect(res.statusCode).toBe(400); // Expect a 400 Bad Request status code
     expect(res.body).toEqual({ error: "Invalid book ID" }); // Expect a descriptive error message
+  });
+});
+
+describe("Chapter 4 API Tests", () => {
+  beforeEach(() => {
+    resetBooks(); // Reset the database before each test
+  });
+
+  // Test: Add a new book
+  test("Should return a 201-status code when adding a new book", async () => {
+    const response = await request(app)
+      .post("/api/books")
+      .send({ id: "1", title: "Test Book", author: "Tester" });
+
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toHaveProperty("title", "Test Book");
+  });
+
+  // Test: Add a new book with missing title
+  test("Should return a 400-status code when adding a new book with missing title", async () => {
+    const response = await request(app)
+      .post("/api/books")
+      .send({ id: "2", author: "NoTitle" });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("message", "Title is required.");
+  });
+
+  // Test: Delete a book
+  test("Should return a 204-status code when deleting a book", async () => {
+    // First add a book
+    await request(app)
+      .post("/api/books")
+      .send({ id: "3", title: "Delete", author: "Author" });
+
+    // Then delete it
+    const response = await request(app).delete("/api/books/3");
+
+    expect(response.statusCode).toBe(204);
   });
 });
