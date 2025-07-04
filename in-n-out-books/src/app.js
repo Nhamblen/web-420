@@ -165,28 +165,41 @@ app.delete("/api/books/:id", (req, res) => {
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Week 6 assignment below this line
+
+// Define PUT route to update a book by its ID
 app.put("/api/books/:id", (req, res) => {
   try {
+    // Convert the route parameter to an integer
     const id = parseInt(req.params.id);
 
+    // Validate that the ID is a number
     if (isNaN(id)) {
+      // Return a 400 Bad Request error if ID is not number
       return res.status(400).json({ message: "Input must be a number" });
     }
 
+    // Find the book in the mock database with the matching ID
     const book = books.find((b) => b.id === id);
 
+    // Validate that the request body contains a title
     if (!req.body.title) {
+      // Return a 400 Bad Request error if title is missing
       return res.status(400).json({ message: "Input must include a title" });
     }
 
+    // If the book is found, update its title and author
     if (book) {
       book.title = req.body.title;
       book.author = req.body.author;
+
+      // Return a 204 No Content status code indicating a successful update
       return res.status(204).send();
     } else {
+      // If no book is found with the given ID, return a 404 Not Found error
       return res.status(404).json({ message: "Book not found" });
     }
   } catch (error) {
+    // Catch any unexpected errors and return a 500 Internal Server Error
     return res.status(500).json({ message: "Server Error" });
   }
 });

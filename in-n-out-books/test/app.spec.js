@@ -106,28 +106,34 @@ describe("Chapter 4 API Tests", () => {
 });
 
 describe("Chapter 5: API Tests", () => {
+  // Test: Update a book
   test("Should update a book and return a 204-status code", async () => {
     const response = await request(app)
-      .put("/api/books/1")
-      .send({ title: "Updated Title", author: "Updated Author" });
+      .put("/api/books/1") // PUT request to update book with ID 1
+      .send({ title: "Updated Title", author: "Updated Author" }); // Sending updated data
 
+    // Expect a successful update with 204 status and no response body
     expect(response.statusCode).toEqual(204);
   });
 
+  // Test: Update a book without an ID (error)
   test("Should return a 400-status code when using a non-numeric id", async () => {
     const response = await request(app)
-      .put("/api/books/hi")
+      .put("/api/books/hi") // Non-numeric ID in the request
       .send({ title: "Invalid ID", author: "Author" });
 
+    // Expect a 400 Bad Request with a specific error message
     expect(response.statusCode).toEqual(400);
     expect(response.body.message).toEqual("Input must be a number");
   });
 
+  // Test: Update a book without a title (error)
   test("Should return a 400-status code when updating a book with a missing title", async () => {
     const response = await request(app)
-      .put("/api/books/1")
-      .send({ author: "Author Only" });
+      .put("/api/books/1") // Valid book ID
+      .send({ author: "Author Only" }); // Missing title
 
+    // Expect a 400 Bad Request with a specific error message
     expect(response.statusCode).toEqual(400);
     expect(response.body.message).toEqual("Input must include a title");
   });
