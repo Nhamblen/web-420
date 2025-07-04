@@ -163,6 +163,35 @@ app.delete("/api/books/:id", (req, res) => {
 });
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////////////////
+// Week 6 assignment below this line
+app.put("/api/books/:id", (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Input must be a number" });
+    }
+
+    const book = books.find((b) => b.id === id);
+
+    if (!req.body.title) {
+      return res.status(400).json({ message: "Input must include a title" });
+    }
+
+    if (book) {
+      book.title = req.body.title;
+      book.author = req.body.author;
+      return res.status(204).send();
+    } else {
+      return res.status(404).json({ message: "Book not found" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Server Error" });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////
+
 // Route to trigger a manual error for testing 500 error handling
 app.get("/error", (req, res, next) => {
   next(new Error("Test error"));

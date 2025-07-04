@@ -104,3 +104,31 @@ describe("Chapter 4 API Tests", () => {
     expect(response.statusCode).toBe(204);
   });
 });
+
+describe("Chapter 5: API Tests", () => {
+  test("Should update a book and return a 204-status code", async () => {
+    const response = await request(app)
+      .put("/api/books/1")
+      .send({ title: "Updated Title", author: "Updated Author" });
+
+    expect(response.statusCode).toEqual(204);
+  });
+
+  test("Should return a 400-status code when using a non-numeric id", async () => {
+    const response = await request(app)
+      .put("/api/books/hi")
+      .send({ title: "Invalid ID", author: "Author" });
+
+    expect(response.statusCode).toEqual(400);
+    expect(response.body.message).toEqual("Input must be a number");
+  });
+
+  test("Should return a 400-status code when updating a book with a missing title", async () => {
+    const response = await request(app)
+      .put("/api/books/1")
+      .send({ author: "Author Only" });
+
+    expect(response.statusCode).toEqual(400);
+    expect(response.body.message).toEqual("Input must include a title");
+  });
+});
