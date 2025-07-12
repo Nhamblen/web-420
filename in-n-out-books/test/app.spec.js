@@ -138,3 +138,34 @@ describe("Chapter 5: API Tests", () => {
     expect(response.body.message).toEqual("Input must include a title");
   });
 });
+
+describe("Chapter 6: API Tests", () => {
+  test("It should log a user in and return 200 with ‘Authentication successful’", async () => {
+    const response = await request(app)
+      .post("/api/login")
+      .send({ email: "test@example.com", password: "password123" });
+
+    expect(response.statusCode).toEqual(200);
+    expect(response.body.message).toEqual("Authentication successful");
+  });
+
+  test("It should return 401 with ‘Unauthorized’ when credentials are incorrect", async () => {
+    const response = await request(app)
+      .post("/api/login")
+      .send({ email: "test@example.com", password: "wrongpassword" });
+
+    expect(response.statusCode).toEqual(401);
+    expect(response.body.message).toEqual("Unauthorized");
+  });
+
+  test("It should return 400 with ‘Bad Request’ when email or password is missing", async () => {
+    const response = await request(app)
+      .post("/api/login")
+      .send({ email: "test@example.com" }); // no password
+
+    expect(response.statusCode).toEqual(400);
+    expect(response.body.message).toEqual(
+      "Bad Request: Missing email or password"
+    );
+  });
+});
