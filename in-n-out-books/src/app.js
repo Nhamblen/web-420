@@ -8,6 +8,8 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const books = require("../database/books.js");
+const bcrypt = require("bcryptjs");
+const users = require("../database/users.js");
 
 // Express app
 const app = express();
@@ -201,6 +203,38 @@ app.put("/api/books/:id", (req, res) => {
   } catch (error) {
     // Catch any unexpected errors and return a 500 Internal Server Error
     return res.status(500).json({ message: "Server Error" });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Week 7 assignment below this line
+
+// POST route for user login
+app.post("/api/login", (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate required fields
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Bad Request: Missing email or password" });
+    }
+
+    // Find user by email
+    const user = users.find((u) => u.email === email);
+
+    // Validate user and password
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // If valid, respond with success
+    return res.status(200).json({ message: "Authentication successful" });
+  } catch (error) {
+    console.error("POST /api/login error:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 ////////////////////////////////////////////////////////////////////////////////////////////
