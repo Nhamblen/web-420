@@ -140,29 +140,35 @@ describe("Chapter 5: API Tests", () => {
 });
 
 describe("Chapter 6: API Tests", () => {
+  // Test: Log user in
   test("It should log a user in and return 200 with ‘Authentication successful’", async () => {
     const response = await request(app)
-      .post("/api/login")
-      .send({ email: "test@example.com", password: "password123" });
+      .post("/api/login") // POST request to /api/login
+      .send({ email: "test@example.com", password: "password123" }); // Valid credentials
 
+    // Status code and response message
     expect(response.statusCode).toEqual(200);
     expect(response.body.message).toEqual("Authentication successful");
   });
 
+  // Test: Log user in with invalid credentials (error)
   test("It should return 401 with ‘Unauthorized’ when credentials are incorrect", async () => {
     const response = await request(app)
-      .post("/api/login")
-      .send({ email: "test@example.com", password: "wrongpassword" });
+      .post("/api/login") // Same endpoint
+      .send({ email: "test@example.com", password: "wrongpassword" }); // Incorrect password
 
+    // 401 Unauthorized response
     expect(response.statusCode).toEqual(401);
     expect(response.body.message).toEqual("Unauthorized");
   });
 
+  // Test: Log user in with missing password (error)
   test("It should return 400 with ‘Bad Request’ when email or password is missing", async () => {
     const response = await request(app)
       .post("/api/login")
-      .send({ email: "test@example.com" }); // no password
+      .send({ email: "test@example.com" }); // No password
 
+    // 400 Bad Request response
     expect(response.statusCode).toEqual(400);
     expect(response.body.message).toEqual(
       "Bad Request: Missing email or password"
