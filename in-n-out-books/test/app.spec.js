@@ -141,7 +141,7 @@ describe("Chapter 5: API Tests", () => {
 
 describe("Chapter 6: API Tests", () => {
   // Test: Log user in
-  test("It should log a user in and return 200 with ‘Authentication successful’", async () => {
+  test("Should log a user in and return 200 with ‘Authentication successful’", async () => {
     const response = await request(app)
       .post("/api/login") // POST request to /api/login
       .send({ email: "test@example.com", password: "password123" }); // Valid credentials
@@ -152,7 +152,7 @@ describe("Chapter 6: API Tests", () => {
   });
 
   // Test: Log user in with invalid credentials (error)
-  test("It should return 401 with ‘Unauthorized’ when credentials are incorrect", async () => {
+  test("Should return 401 with ‘Unauthorized’ when credentials are incorrect", async () => {
     const response = await request(app)
       .post("/api/login") // Same endpoint
       .send({ email: "test@example.com", password: "wrongpassword" }); // Incorrect password
@@ -163,7 +163,7 @@ describe("Chapter 6: API Tests", () => {
   });
 
   // Test: Log user in with missing password (error)
-  test("It should return 400 with ‘Bad Request’ when email or password is missing", async () => {
+  test("Should return 400 with ‘Bad Request’ when email or password is missing", async () => {
     const response = await request(app)
       .post("/api/login")
       .send({ email: "test@example.com" }); // No password
@@ -173,5 +173,35 @@ describe("Chapter 6: API Tests", () => {
     expect(response.body.message).toEqual(
       "Bad Request: Missing email or password"
     );
+  });
+});
+
+describe("Chapter 7: API Tests", () => {
+  const validAnswers = [{ answer: "Blue" }, { answer: "Omaha" }];
+
+  const invalidAnswers = [{ wrongKey: "Wrong" }];
+
+  test("Should return 200 with success message when security questions are correct", async () => {
+    const res = await request(app)
+      .post("/api/users/testuser@example.com/verify-security-question")
+      .send(validAnswers);
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("Security questions successfully answered");
+  });
+
+  test("Should return 400 with Bad Request message when body fails validation", async () => {
+    const res = await request(app)
+      .post("/api/users/testuser@example.com/verify-security-question")
+      .send(invalidAnswers);
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBe("Bad Request");
+  });
+
+  test("Should return 401 with Unauthorized message when answers are incorrect", async () => {
+    const res = await request(app)
+      .post("/api/users/testuser@example.com/verify-security-question")
+      .send([{ answer: "Wrong" }, { answer: "Answers" }]);
+    expect(res.status).toBe(401);
+    expect(res.body.message).toBe("Unauthorized");
   });
 });
