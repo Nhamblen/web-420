@@ -10,8 +10,12 @@ const bcrypt = require("bcryptjs"); // Import bcryptjs to hash passwords
 // Static array simulating a user collection with one predefined user
 const users = [
   {
-    email: "test@example.com", // User email
-    password: bcrypt.hashSync("password123", 10), // Hashed password
+    email: "test@example.com",
+    password: bcrypt.hashSync("password123", 10), // hashed password
+    securityQuestions: [
+      { question: "What is your favorite color?", answer: "Blue" },
+      { question: "What city were you born in?", answer: "Omaha" },
+    ],
   },
 ];
 

@@ -183,7 +183,7 @@ describe("Chapter 7: API Tests", () => {
 
   test("Should return 200 with success message when security questions are correct", async () => {
     const res = await request(app)
-      .post("/api/users/testuser@example.com/verify-security-question")
+      .post("/api/users/test@example.com/verify-security-question")
       .send(validAnswers);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe("Security questions successfully answered");
@@ -191,7 +191,7 @@ describe("Chapter 7: API Tests", () => {
 
   test("Should return 400 with Bad Request message when body fails validation", async () => {
     const res = await request(app)
-      .post("/api/users/testuser@example.com/verify-security-question")
+      .post("/api/users/test@example.com/verify-security-question")
       .send(invalidAnswers);
     expect(res.status).toBe(400);
     expect(res.body.message).toBe("Bad Request");
@@ -199,7 +199,7 @@ describe("Chapter 7: API Tests", () => {
 
   test("Should return 401 with Unauthorized message when answers are incorrect", async () => {
     const res = await request(app)
-      .post("/api/users/testuser@example.com/verify-security-question")
+      .post("/api/users/test@example.com/verify-security-question")
       .send([{ answer: "Wrong" }, { answer: "Answers" }]);
     expect(res.status).toBe(401);
     expect(res.body.message).toBe("Unauthorized");

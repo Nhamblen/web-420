@@ -10,11 +10,29 @@ const bodyParser = require("body-parser");
 const books = require("../database/books.js");
 const bcrypt = require("bcryptjs");
 const users = require("../database/users.js");
+const Ajv = require("ajv");
+const usersData = require("../database/users");
+const Collection = require("../database/collection");
+const ajv = new Ajv();
+const userCollection = new Collection(usersData);
 
 // Express app
 const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
+
+const securityQuestionsSchema = {
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
+      answer: { type: "string" },
+    },
+    required: ["answer"],
+    additionalProperties: false,
+  },
+};
+const validate = ajv.compile(securityQuestionsSchema);
 
 // Landing page with CSS included (GET route for root "/")
 app.get("/", (req, res) => {
@@ -235,6 +253,39 @@ app.post("/api/login", (req, res) => {
   } catch (error) {
     console.error("POST /api/login error:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Week 7 assignment below this line
+app.post("/api/users/:email/verify-security-question", async (req, res) => {
+  try {
+    const valid = validate(req.body);
+    if (!valid) {
+      return res.status(400).json({ message: "Bad Request" });
+    }
+
+    const email = req.params.email;
+
+    const user = await userCollection.findOne({ email });
+
+    const isCorrect = req.body.every((q, index) => {
+      return q.answer === user.securityQuestions[index]?.answer;
+    });
+
+    if (!isCorrect) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Security questions successfully answered" });
+  } catch (error) {
+    if (error.message === "No matching item found") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 ////////////////////////////////////////////////////////////////////////////////////////////
