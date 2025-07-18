@@ -258,33 +258,45 @@ app.post("/api/login", (req, res) => {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// Week 7 assignment below this line
+// Week 8 assignment below this line
+
+// POST route to verify user's answers to their security questions
 app.post("/api/users/:email/verify-security-question", async (req, res) => {
   try {
+    // Validate request body using AJV schema
     const valid = validate(req.body);
     if (!valid) {
+      // If body does not match schema, return 400 Bad Request
       return res.status(400).json({ message: "Bad Request" });
     }
 
+    // Extract email from the route parameter
     const email = req.params.email;
 
+    // Search for the user by email in the mock user collection
     const user = await userCollection.findOne({ email });
 
+    // Check if each provided answer matches the corresponding stored answer
     const isCorrect = req.body.every((q, index) => {
       return q.answer === user.securityQuestions[index]?.answer;
     });
 
+    // If any answer is incorrect, return 401 Unauthorized
     if (!isCorrect) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
+    // If all answers are correct, return 200 OK with success message
     return res
       .status(200)
       .json({ message: "Security questions successfully answered" });
   } catch (error) {
+    // Handle case where user was not found in the collection
     if (error.message === "No matching item found") {
       return res.status(401).json({ message: "Unauthorized" });
     }
+
+    // For all other errors, return 500 Internal Server Error
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });

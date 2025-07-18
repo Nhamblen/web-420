@@ -177,31 +177,48 @@ describe("Chapter 6: API Tests", () => {
 });
 
 describe("Chapter 7: API Tests", () => {
+  // Set of valid answers that match the mock user's stored answers
   const validAnswers = [{ answer: "Blue" }, { answer: "Omaha" }];
 
+  // Invalid answers that don't match
   const invalidAnswers = [{ wrongKey: "Wrong" }];
 
+  // Test: Return 200 OK when security questions are answered correctly
   test("Should return 200 with success message when security questions are correct", async () => {
     const res = await request(app)
       .post("/api/users/test@example.com/verify-security-question")
-      .send(validAnswers);
+      .send(validAnswers); // Send correct answers
+
+    // Expect a 200 OK status code
     expect(res.status).toBe(200);
+
+    // Expect the success message
     expect(res.body.message).toBe("Security questions successfully answered");
   });
 
+  // Test: Return 400 Bad Request when validation fails
   test("Should return 400 with Bad Request message when body fails validation", async () => {
     const res = await request(app)
       .post("/api/users/test@example.com/verify-security-question")
       .send(invalidAnswers);
+
+    // Expect a 400 Bad Request status code
     expect(res.status).toBe(400);
-    expect(res.body.message).toBe("Bad Request");
+
+    // Expect the error message for bad input
+    expect(res.body.message).toBe("Bad Request"); // Send an invalid payload
   });
 
+  // Test: Return 401 Unauthorized when answers are incorrect
   test("Should return 401 with Unauthorized message when answers are incorrect", async () => {
     const res = await request(app)
       .post("/api/users/test@example.com/verify-security-question")
-      .send([{ answer: "Wrong" }, { answer: "Answers" }]);
+      .send([{ answer: "Wrong" }, { answer: "Answers" }]); // Wrong answers
+
+    // Expect a 401 Unauthorized status code
     expect(res.status).toBe(401);
+
+    // Expect the error message for unauthorized attempt
     expect(res.body.message).toBe("Unauthorized");
   });
 });
